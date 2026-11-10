@@ -1,0 +1,18 @@
+{
+  "knowledge_base": {
+    "nopalia-politica-devoluciones": "gOCgZQ6uvoiFgtDzrukr",
+    "nopalia-terminos-credito": "wTa8s9Fzh8Q5GzoQHUV3",
+    "nopalia-ventanas-entrega": "7F3DGoiFBymETMZK1PmL"
+  },
+  "tools": {
+    "create_reorder": "tool_6401m71nea2hf369c9gkxsheh0hn",
+    "get_order": "tool_7201m71nea5we3wvd6g1t7agvj2y",
+    "get_usual_order": "tool_0201m71neaa6edxb8362a1173cwv",
+    "list_recent_orders": "tool_7301m71neaddepzr88n5m5hd10qj",
+    "lookup_customer": "tool_6501m71neagjf1pvdfgp47d9a71n",
+    "report_incident": "tool_1701m71neam2en0s14kt0cfytxfj",
+    "request_handoff": "tool_2701m71neaqkerzr36cy17zrff0g",
+    "search_products": "tool_7701m71neatpffe87qp3vbmah8k0",
+    "verify_caller": "tool_1601m71neaxwf5aa8rqy77vtnygm"
+  }
+}

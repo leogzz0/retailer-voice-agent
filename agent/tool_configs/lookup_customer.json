@@ -1,0 +1,32 @@
+{
+  "type": "webhook",
+  "name": "lookup_customer",
+  "description": "Identify the calling store by its 5-digit customer code (from the delivery note) or, if they don't have it, by the store's registered phone number. Returns only store name and city, to confirm with the caller. Does NOT verify the caller.",
+  "response_timeout_secs": 10,
+  "api_schema": {
+    "url": "https://{{system__env_nopalia_api_host}}/v1/customers/lookup",
+    "method": "GET",
+    "request_headers": {
+      "Authorization": {
+        "env_var_label": "nopalia_tool_auth"
+      },
+      "X-Conversation-Id": {
+        "variable_name": "system__conversation_id"
+      }
+    },
+    "query_params_schema": {
+      "properties": {
+        "customer_code": {
+          "type": "string",
+          "description": "5-digit customer code as digits only, e.g. '10234'. Omit if searching by phone."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Store's registered phone number, digits only. Omit if searching by customer code."
+        }
+      },
+      "required": []
+    }
+  },
+  "tool_error_handling_mode": "passthrough"
+}

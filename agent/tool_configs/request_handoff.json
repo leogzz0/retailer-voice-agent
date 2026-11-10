@@ -1,0 +1,56 @@
+{
+  "type": "webhook",
+  "name": "request_handoff",
+  "description": "Hand the caller over to a human advisor, who calls back. Use when the caller asks for a person, the topic is out of scope, after two failed attempts to understand, or when a tool says to offer an advisor. Works for verified and unverified callers.",
+  "response_timeout_secs": 10,
+  "api_schema": {
+    "url": "https://{{system__env_nopalia_api_host}}/v1/handoffs",
+    "method": "POST",
+    "request_headers": {
+      "Authorization": {
+        "env_var_label": "nopalia_tool_auth"
+      },
+      "X-Conversation-Id": {
+        "variable_name": "system__conversation_id"
+      },
+      "Idempotency-Key": {
+        "variable_name": "system__conversation_id"
+      }
+    },
+    "request_body_schema": {
+      "type": "object",
+      "description": "Handoff request",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "description": "Why the handoff happens.",
+          "enum": [
+            "caller_request",
+            "out_of_scope",
+            "not_understood",
+            "credit",
+            "complaint",
+            "verification_failed"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "description": "One or two sentences in Spanish for the advisor: what the caller needs and what was already tried."
+        },
+        "customer_code": {
+          "type": "string",
+          "dynamic_variable": "verified_customer_code"
+        },
+        "callback_phone": {
+          "type": "string",
+          "description": "Only if the caller gives a different number to call back, digits only. Otherwise omit."
+        }
+      },
+      "required": [
+        "reason",
+        "summary"
+      ]
+    }
+  },
+  "tool_error_handling_mode": "passthrough"
+}

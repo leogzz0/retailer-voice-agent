@@ -1,5 +1,7 @@
 name: nopalia
 
+# Secrets come from ./.env (git-ignored). Create it with `make env`.
+
 services:
   db:
     image: postgres:16-alpine
@@ -23,22 +25,44 @@ services:
     environment:
       NOPALIA_DATABASE_URL: postgresql+psycopg://nopalia:nopalia@db:5432/nopalia
       NOPALIA_ENVIRONMENT: local
+      NOPALIA_TICKETING_URL: http://ticketing:8081
+      NOPALIA_TOOL_API_TOKEN: ${NOPALIA_TOOL_API_TOKEN:?run `make env` first}
+      NOPALIA_VERIFICATION_SECRET: ${NOPALIA_VERIFICATION_SECRET:?run `make env` first}
+      NOPALIA_WEBHOOK_SECRET: ${NOPALIA_WEBHOOK_SECRET:?run `make env` first}
+      NOPALIA_FROZEN_NOW: ${NOPALIA_FROZEN_NOW:-}
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
+      ticketing:
+        condition: service_started
     # Live reload for local dev: source is bind-mounted over the image copy.
     volumes:
       - ./api/src:/app/src:ro
-    command: >
-      sh -c "alembic upgrade head &&
-             uvicorn nopalia_api.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/src"
+    # --no-access-log: our middleware already logs every request as JSON.
+    command:
+      - sh
+      - -c
+      - >-
+        alembic upgrade head &&
+        uvicorn nopalia_api.main:app --host 0.0.0.0 --port 8000
+        --no-access-log --reload --reload-dir /app/src
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
       interval: 5s
       timeout: 3s
       retries: 10
+
+  ticketing:
+    # Stand-in for the customer's ticketing system; fails ~30% of requests on purpose.
+    build: ./api
+    environment:
+      TICKETING_FAILURE_RATE: ${TICKETING_FAILURE_RATE:-0.3}
+      TICKETING_LATENCY_MS: ${TICKETING_LATENCY_MS:-150}
+    command: uvicorn nopalia_api.stubs.ticketing:app --host 0.0.0.0 --port 8081 --no-access-log
+    ports:
+      - "8081:8081"
 
 volumes:
   pgdata:

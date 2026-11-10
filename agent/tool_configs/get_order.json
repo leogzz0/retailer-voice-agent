@@ -1,0 +1,32 @@
+{
+  "type": "webhook",
+  "name": "get_order",
+  "description": "Get status, items and delivery window of one order of the verified store, by folio.",
+  "response_timeout_secs": 10,
+  "api_schema": {
+    "url": "https://{{system__env_nopalia_api_host}}/v1/customers/{customer_code}/orders/{folio}",
+    "method": "GET",
+    "request_headers": {
+      "Authorization": {
+        "env_var_label": "nopalia_tool_auth"
+      },
+      "X-Conversation-Id": {
+        "variable_name": "system__conversation_id"
+      },
+      "X-Verification-Token": {
+        "variable_name": "verification_token"
+      }
+    },
+    "path_params_schema": {
+      "customer_code": {
+        "type": "string",
+        "dynamic_variable": "verified_customer_code"
+      },
+      "folio": {
+        "type": "integer",
+        "description": "Order folio number as said by the caller, digits only, e.g. 4721."
+      }
+    }
+  },
+  "tool_error_handling_mode": "passthrough"
+}

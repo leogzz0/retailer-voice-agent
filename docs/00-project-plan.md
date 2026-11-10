@@ -9,9 +9,9 @@ runs locally only; ngrok tunnel for ElevenLabs → local API.
 | # | Milestone | Done when | Status |
 |---|---|---|---|
 | M0 | Discovery & project setup | Discovery summary and plan committed | ✅ |
-| M1 | Customer systems API (read side) | `make up` serves seeded data; `make check` green locally and in CI | 🔄 in review |
-| M2 | Integration hardening | Tool auth, idempotent writes, signed post-call webhook, retries/timeouts, JSON logs, latency metrics, each with tests | ⏳ |
-| M3 | Agent as code | `elevenlabs agents push` deploys "Paty"; text chat answers an order-status question using live local data | ⏳ |
+| M1 | Customer systems API (read side) | `make up` serves seeded data; `make check` green locally and in CI | ✅ |
+| M2 | Integration hardening | Tool auth, idempotent writes, signed post-call webhook, retries/timeouts, JSON logs, latency metrics, each with tests | ✅ |
+| M3 | Agent as code | `elevenlabs agents push` deploys "Vera"; text chat answers an order-status question using live local data | 🔄 in review |
 | M4 | Agent tests | ~10 CLI tests (happy path, unclear Spanish, mid-flow changes, handoff) passing | ⏳ |
 | M5 | Customer deliverables | Solution design, runbook, exec summary, ADRs, lessons learned, demo GIF | ⏳ |
 
@@ -33,21 +33,29 @@ Copy into GitHub Issues when convenient. Labels: `api`, `agent`, `docs`, `infra`
 - [x] `docs` ADR-0001 local-only hosting, ADR-0002 tool API contract
 
 ### M2 — Integration hardening
-- [ ] `security` Bearer token auth on all `/v1` tool routes (constant-time compare)
-- [ ] `api` Write tools: create reorder, report delivery incident, request human callback
-- [ ] `api` `Idempotency-Key` support backed by a table (replay returns the original response)
-- [ ] `security` `POST /webhooks/elevenlabs/post-call` with HMAC verification + dedupe by `conversation_id`
-- [ ] `api` Outbound call to stub ticketing system with timeout + bounded retries + backoff
-- [ ] `api` Structured JSON logs: request id, `conversation_id`, tool name, latency
-- [ ] `api` Latency middleware + `scripts/latency_report.py` (p50/p95 per tool)
+- [x] `security` Bearer token auth on all `/v1` tool routes (constant-time compare, fails closed)
+- [x] `security` Caller verification (caller ID or phone last 4), conversation-bound token, lockout *(from M1 review)*
+- [x] `api` Delivery zones with per-zone cutoff (18:00 metro / 14:00 foráneo), no Sunday delivery *(from M1 review)*
+- [x] `api` Write tools: create reorder (credit check, row lock), report delivery incident, request human callback
+- [x] `api` `Idempotency-Key` support backed by a table (replay returns the original response)
+- [x] `security` `POST /webhooks/elevenlabs` with HMAC verification + dedupe by `conversation_id`
+- [x] `api` Outbox + outbound ticketing client with timeout, bounded retries, jittered backoff
+- [x] `api` Structured JSON logs: request id, `conversation_id`, tool name, latency
+- [x] `api` Latency middleware + `scripts/latency_report.py` (p50/p95 per tool)
+- [x] `api` Frozen clock for tests, liveness/readiness split, configurable search threshold + ambiguity flag *(from M1 review)*
+- [x] `docs` ADR-0003 integration security, ADR-0004 idempotency and outbox
 
 ### M3 — Agent as code
-- [ ] `agent` `elevenlabs agents init`; Spanish system prompt for "Paty"
-- [ ] `agent` Tool configs with secret-backed auth header
-- [ ] `agent` Knowledge base: returns, delivery windows, credit terms
-- [ ] `agent` Handoff design without telephony (ticket + callback + end call)
-- [ ] `infra` ngrok static domain; `make tunnel`
-- [ ] `docs` ADR-0003 agent config as code, ADR-0004 environments without CLI support
+- [x] `agent` CLI project linked to the existing "Vera" agent (`agents pull` / `push`); Spanish system prompt
+- [x] `agent` 9 webhook tools: env-var host, secret-backed auth, sanitized verification token, pinned store code
+- [x] `agent` Knowledge base: returns, delivery windows, credit terms (prompt mode)
+- [x] `agent` Handoff design without telephony (ticket + callback + `end_call`)
+- [x] `agent` `provision.py` (secret, env vars, KB, tools) + `render_agent.py`; `make agent-deploy`
+- [x] `agent` Live simulation: order 4721 status answered from local data through the tunnel *(proves M2 review point 1)*
+- [x] `infra` ngrok static domain; `make tunnel`
+- [x] `docs` ADR-0005 agent config as code, ADR-0006 environments and secrets
+- [ ] `agent` Re-run the simulation to confirm `passthrough` error mode relays `message_es`
+- [ ] `agent` Shorter spoken references (`INC-000002` was read as six digits) *(from first live run)*
 
 ### M4 — Agent tests
 - [ ] `agent` Tool-call tests: identification, order status, product search params

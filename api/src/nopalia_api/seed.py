@@ -17,12 +17,15 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from nopalia_api.clock import business_tz, today_local
 from nopalia_api.config import get_settings
 from nopalia_api.db import get_engine
 from nopalia_api.models import (
+    Base,
     Customer,
     Delivery,
     DeliveryStatus,
+    DeliveryZone,
     Order,
     OrderItem,
     OrderStatus,
@@ -59,6 +62,14 @@ PRODUCTS: list[tuple[str, str, str, str, str, str]] = [
     ("LIM-003", "Jabón de barra para ropa Nopalia 400 g", "jabon de pasta jabon de barra jabon para lavar", "limpieza", "caja con 25 barras", "310.00"),
 ]  # fmt: skip
 
+METRO_CITIES = {
+    "Monterrey",
+    "Guadalupe",
+    "San Nicolás de los Garza",
+    "Apodaca",
+    "Escobedo",
+    "Santa Catarina",
+}
 CITIES = [
     ("Monterrey", "Nuevo León"),
     ("Guadalupe", "Nuevo León"),
@@ -183,7 +194,7 @@ class Seeder:
             c = Customer(
                 customer_code=s.code, store_name=s.name, owner_name=s.owner, phone=s.phone,
                 city=s.city, state="Nuevo León", credit_limit_mxn=Decimal("25000"),
-                credit_used_mxn=Decimal("8400"),
+                credit_used_mxn=Decimal("8400"), zone=DeliveryZone.METRO,
             )  # fmt: skip
             self.db.add(c)
             self.db.flush()
@@ -207,17 +218,21 @@ class Seeder:
     def add_random_stores(self, n: int) -> None:
         rng, skus = self.rng, list(self.products)
         folio = 8000
+        # Random, non-sequential codes: knowing one store's code says nothing about others.
+        taken = {s.code for s in DEMO_STORES}
+        codes = [c for c in rng.sample(range(10000, 99999), n + len(taken)) if str(c) not in taken]
         for idx in range(n):
             city, state = rng.choice(CITIES)
             owner = (f"{rng.choice(FIRST_NAMES)} {rng.choice(LAST_NAMES)} "
                      f"{rng.choice(LAST_NAMES)}")  # fmt: skip
             c = Customer(
-                customer_code=str(40000 + idx * 7),
+                customer_code=str(codes[idx]),
                 store_name=f"{rng.choice(STORE_PREFIXES)} {rng.choice(STORE_SUFFIXES)}",
                 owner_name=owner,
                 phone=f"+52815560{idx:04d}",
                 city=city,
                 state=state,
+                zone=DeliveryZone.METRO if city in METRO_CITIES else DeliveryZone.FORANEO,
                 credit_limit_mxn=Decimal(rng.choice([10000, 15000, 25000, 40000])),
                 credit_used_mxn=Decimal(rng.randint(0, 9000)),
             )
@@ -241,11 +256,11 @@ class Seeder:
 
 
 def seed(db: Session, *, today: date | None = None, random_stores: int = 40) -> None:
-    tz = ZoneInfo(get_settings().timezone)
-    today = today or datetime.now(tz).date()
-    db.execute(
-        text("TRUNCATE deliveries, order_items, orders, products, customers RESTART IDENTITY")
-    )
+    tz = business_tz()
+    today = today or today_local()
+    tables = ", ".join(t.name for t in Base.metadata.sorted_tables)
+    db.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
+    db.execute(text("ALTER SEQUENCE order_folio_seq RESTART WITH 10000"))
     s = Seeder(db, today, tz, random.Random(42))
     s.add_products()
     s.add_demo_stores()

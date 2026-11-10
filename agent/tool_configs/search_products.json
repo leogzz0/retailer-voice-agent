@@ -1,0 +1,34 @@
+{
+  "type": "webhook",
+  "name": "search_products",
+  "description": "Find catalog products from how the caller names them (nicknames, misspellings, no accents). If 'ambiguous' is true, ask the caller which of the top matches they mean.",
+  "response_timeout_secs": 10,
+  "api_schema": {
+    "url": "https://{{system__env_nopalia_api_host}}/v1/products/search",
+    "method": "GET",
+    "request_headers": {
+      "Authorization": {
+        "env_var_label": "nopalia_tool_auth"
+      },
+      "X-Conversation-Id": {
+        "variable_name": "system__conversation_id"
+      }
+    },
+    "query_params_schema": {
+      "properties": {
+        "q": {
+          "type": "string",
+          "description": "Product as the caller said it, e.g. 'sopa de vasito', 'galletas maria'."
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Max results, 1 to 10. Default 5."
+        }
+      },
+      "required": [
+        "q"
+      ]
+    }
+  },
+  "tool_error_handling_mode": "passthrough"
+}

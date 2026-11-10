@@ -1,0 +1,8 @@
+[project]
+name = "nopalia-agent-tools"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "elevenlabs>=2.77.0",
+    "python-dotenv>=1.2.4",
+]

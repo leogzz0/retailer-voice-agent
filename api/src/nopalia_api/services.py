@@ -1,26 +1,16 @@
 """Read-side business queries. Routers stay thin; everything testable lives here."""
 
 import re
-from datetime import date, datetime
-from decimal import Decimal
-from zoneinfo import ZoneInfo
+from datetime import date
 
 from sqlalchemy import Float, cast, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from nopalia_api import schemas, speech
+from nopalia_api.clock import today_local
 from nopalia_api.config import get_settings
+from nopalia_api.errors import ToolError
 from nopalia_api.models import Customer, Order, OrderItem, OrderStatus, Product
-
-
-class ToolError(Exception):
-    def __init__(self, status_code: int, code: str, message_es: str) -> None:
-        self.status_code = status_code
-        self.body = schemas.ErrorBody(code=code, message_es=message_es)
-
-
-def today_local() -> date:
-    return datetime.now(ZoneInfo(get_settings().timezone)).date()
 
 
 def normalize_mx_phone(raw: str) -> str | None:
@@ -58,13 +48,9 @@ def find_customer(db: Session, *, phone: str | None, customer_code: str | None) 
     return customer
 
 
-def customer_out(c: Customer) -> schemas.CustomerOut:
-    return schemas.CustomerOut(
-        customer_code=c.customer_code,
-        store_name=c.store_name,
-        owner_first_name=speech.first_name(c.owner_name),
-        city=c.city,
-        credit_available_mxn=max(c.credit_limit_mxn - c.credit_used_mxn, Decimal("0")),
+def lookup_out(c: Customer) -> schemas.CustomerLookupOut:
+    return schemas.CustomerLookupOut(
+        customer_code=c.customer_code, store_name=c.store_name, city=c.city
     )
 
 
@@ -90,7 +76,7 @@ def list_orders(
         select(Order)
         .where(Order.customer_id == customer.id)
         .options(selectinload(Order.items))
-        .order_by(Order.created_at.desc())
+        .order_by(Order.created_at.desc(), Order.folio.desc())
         .limit(limit)
     )
     if status is not None:
@@ -102,7 +88,7 @@ def list_orders(
     )
 
 
-def get_order(db: Session, customer: Customer, folio: int) -> schemas.OrderDetail:
+def order_for_customer(db: Session, customer: Customer, folio: int) -> Order:
     # Scoped by customer on purpose: a caller can only hear about their own orders,
     # so guessing folios does not leak other stores' data.
     order = db.scalar(
@@ -120,6 +106,11 @@ def get_order(db: Session, customer: Customer, folio: int) -> schemas.OrderDetai
             "No encontré ese folio en las órdenes de esta tienda. "
             "Confirma el folio dígito por dígito o ofrece revisar sus pedidos recientes.",
         )
+    return order
+
+
+def get_order(db: Session, customer: Customer, folio: int) -> schemas.OrderDetail:
+    order = order_for_customer(db, customer, folio)
     today = today_local()
     d = order.delivery
     delivery = (
@@ -192,25 +183,26 @@ def usual_order(
 def search_products(db: Session, query: str, limit: int = 5) -> schemas.ProductSearchResult:
     """Fuzzy, accent-insensitive search over names and shopkeeper nicknames (pg_trgm).
 
-    Speech-to-text gives us "chetos", "cheetos", "sopita de vaso", "galletas maria" — exact
-    matching would fail most real calls.
+    Speech-to-text gives us "chetos", "sopita de vaso", "galletas maria"; exact matching
+    would fail most real calls. Threshold and ambiguity margin are settings because they
+    must be re-tuned against the real catalog, not this 26-SKU sample.
     """
+    settings = get_settings()
     q = func.unaccent(func.lower(query))
     name_score = func.word_similarity(q, func.unaccent(func.lower(Product.name)))
     terms_score = func.word_similarity(q, func.unaccent(func.lower(Product.search_terms)))
     score = cast(func.greatest(name_score, terms_score), Float).label("score")
     rows = db.execute(
         select(Product, score)
-        .where(Product.active.is_(True), score >= 0.35)
+        .where(Product.active.is_(True), score >= settings.product_match_threshold)
         .order_by(score.desc(), Product.name)
         .limit(limit)
     ).all()
-    return schemas.ProductSearchResult(
-        query=query,
-        matches=[
-            schemas.ProductMatch(
-                sku=p.sku, name=p.name, unit=p.unit, price_mxn=p.price_mxn, score=round(s, 2)
-            )
-            for p, s in rows
-        ],
-    )
+    matches = [
+        schemas.ProductMatch(
+            sku=p.sku, name=p.name, unit=p.unit, price_mxn=p.price_mxn, score=round(s, 2)
+        )
+        for p, s in rows
+    ]
+    ambiguous = len(rows) >= 2 and (rows[0][1] - rows[1][1]) < settings.product_ambiguity_margin
+    return schemas.ProductSearchResult(query=query, matches=matches, ambiguous=ambiguous)

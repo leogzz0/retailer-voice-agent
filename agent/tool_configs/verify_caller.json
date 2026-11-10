@@ -1,0 +1,52 @@
+{
+  "type": "webhook",
+  "name": "verify_caller",
+  "description": "Verify that the caller belongs to the store before sharing ANY account information. Call it right after the caller confirms the store name. First call it without phone_last4 (caller ID may verify automatically); if it answers missing_factor, ask for the last 4 digits of the store's registered phone and call it again with them.",
+  "response_timeout_secs": 10,
+  "api_schema": {
+    "url": "https://{{system__env_nopalia_api_host}}/v1/customers/{customer_code}/verify",
+    "method": "POST",
+    "request_headers": {
+      "Authorization": {
+        "env_var_label": "nopalia_tool_auth"
+      },
+      "X-Conversation-Id": {
+        "variable_name": "system__conversation_id"
+      },
+      "X-Caller-Id": {
+        "variable_name": "system__caller_id"
+      }
+    },
+    "path_params_schema": {
+      "customer_code": {
+        "type": "string",
+        "description": "The 5-digit customer code confirmed with lookup_customer, digits only."
+      }
+    },
+    "request_body_schema": {
+      "type": "object",
+      "description": "Verification factor",
+      "properties": {
+        "phone_last4": {
+          "type": "string",
+          "description": "Last 4 digits of the store's registered phone, exactly as the caller said them, digits only. Omit on the first attempt."
+        }
+      },
+      "required": []
+    }
+  },
+  "assignments": [
+    {
+      "source": "response",
+      "dynamic_variable": "verification_token",
+      "value_path": "verification_token",
+      "sanitize": true
+    },
+    {
+      "source": "response",
+      "dynamic_variable": "verified_customer_code",
+      "value_path": "customer_code"
+    }
+  ],
+  "tool_error_handling_mode": "passthrough"
+}

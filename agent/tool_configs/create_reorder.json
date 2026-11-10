@@ -1,0 +1,62 @@
+{
+  "type": "webhook",
+  "name": "create_reorder",
+  "description": "Place ONE new order for the verified store, only after reading back products, quantities and approximate total and getting a clear 'sí'. Use SKUs from get_usual_order or search_products. Only one order per call.",
+  "response_timeout_secs": 15,
+  "api_schema": {
+    "url": "https://{{system__env_nopalia_api_host}}/v1/customers/{customer_code}/reorders",
+    "method": "POST",
+    "request_headers": {
+      "Authorization": {
+        "env_var_label": "nopalia_tool_auth"
+      },
+      "X-Conversation-Id": {
+        "variable_name": "system__conversation_id"
+      },
+      "X-Verification-Token": {
+        "variable_name": "verification_token"
+      },
+      "Idempotency-Key": {
+        "variable_name": "system__conversation_id"
+      }
+    },
+    "path_params_schema": {
+      "customer_code": {
+        "type": "string",
+        "dynamic_variable": "verified_customer_code"
+      }
+    },
+    "request_body_schema": {
+      "type": "object",
+      "description": "Order lines",
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "Products to order. Merge repeated products into one line.",
+          "items": {
+            "type": "object",
+            "description": "One order line",
+            "properties": {
+              "sku": {
+                "type": "string",
+                "description": "SKU from get_usual_order or search_products, e.g. 'BOT-001'."
+              },
+              "quantity": {
+                "type": "integer",
+                "description": "Number of units as sold (boxes/packs), 1 to 50."
+              }
+            },
+            "required": [
+              "sku",
+              "quantity"
+            ]
+          }
+        }
+      },
+      "required": [
+        "items"
+      ]
+    }
+  },
+  "tool_error_handling_mode": "passthrough"
+}

@@ -1,0 +1,28 @@
+{
+  "type": "webhook",
+  "name": "get_usual_order",
+  "description": "Get the verified store's usual basket (products it orders most often, with typical quantities), to offer repeating it.",
+  "response_timeout_secs": 10,
+  "api_schema": {
+    "url": "https://{{system__env_nopalia_api_host}}/v1/customers/{customer_code}/usual-order",
+    "method": "GET",
+    "request_headers": {
+      "Authorization": {
+        "env_var_label": "nopalia_tool_auth"
+      },
+      "X-Conversation-Id": {
+        "variable_name": "system__conversation_id"
+      },
+      "X-Verification-Token": {
+        "variable_name": "verification_token"
+      }
+    },
+    "path_params_schema": {
+      "customer_code": {
+        "type": "string",
+        "dynamic_variable": "verified_customer_code"
+      }
+    }
+  },
+  "tool_error_handling_mode": "passthrough"
+}
