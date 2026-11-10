@@ -1,0 +1,51 @@
+[project]
+name = "nopalia-api"
+version = "0.1.0"
+description = "Simulated Productos Nopalia back-office systems (customers, products, orders, deliveries) exposed as tools for an ElevenLabs voice agent."
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.20.1",
+    "fastapi>=0.162.2",
+    "psycopg[binary]>=3.3.8",
+    "pydantic-settings>=2.16.2",
+    "sqlalchemy>=2.0,<3",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.16.0",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "ruff>=0.17.4",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# Seed catalog is tabular data; one row per line reads better than wrapped tuples.
+"src/nopalia_api/seed.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["nopalia_api"]
+mypy_path = "src"
+disallow_untyped_defs = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Don't depend on the editable-install .pth file: macOS can flag it "hidden" and
+# recent CPython releases skip hidden .pth files.
+pythonpath = ["src"]
+addopts = "-ra"

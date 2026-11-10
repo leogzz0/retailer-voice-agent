@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# ElevenLabs CLI local state (added in M3 if needed)
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
