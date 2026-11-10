@@ -37,6 +37,23 @@ jobs:
       - run: uv run mypy
       - run: uv run pytest
 
+  agent:
+    # Offline only: lints the deploy scripts and validates every test definition against the
+    # ElevenLabs SDK models. No API key, no credits.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.7"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uvx ruff check --line-length 100 .
+      - run: uv run python agent_tests.py validate
+
   docker-build:
     runs-on: ubuntu-latest
     steps:

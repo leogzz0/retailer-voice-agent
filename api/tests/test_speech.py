@@ -5,7 +5,7 @@ from datetime import UTC, date, datetime
 import pytest
 
 from nopalia_api.services import normalize_mx_phone
-from nopalia_api.speech import date_es, first_name, window_es
+from nopalia_api.speech import date_es, digits_es, first_name, window_es
 
 
 def test_date_es_plain() -> None:
@@ -43,3 +43,10 @@ def test_normalize_mx_phone_rejects_short() -> None:
 
 def test_first_name_only() -> None:
     assert first_name("Guadalupe Treviño Salinas") == "Guadalupe"
+
+
+@pytest.mark.parametrize(
+    ("n", "spoken"), [(2, "dos"), (10, "uno, cero"), (4721, "cuatro, siete, dos, uno")]
+)
+def test_digits_es_reads_short_form(n: int, spoken: str) -> None:
+    assert digits_es(n) == spoken

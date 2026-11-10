@@ -8,6 +8,11 @@ a request is out of scope.
 > Productos Nopalia is a **fictional** consumer-goods company. All data is invented.
 > Code and docs are in English. The agent speaks Mexican Spanish.
 
+<!-- Demo GIF: record a call with docs/06-demo-script.md, save as docs/demo.gif, then replace
+     this comment with: ![Vera demo call](docs/demo.gif) -->
+**Start here:** [executive summary](docs/04-executive-summary.md) ·
+[solution design](docs/02-solution-design.md) · [demo script](docs/06-demo-script.md)
+
 ## Architecture
 
 ```mermaid
@@ -30,8 +35,8 @@ Run `make up`, `make tunnel` and `make agent-deploy`, then talk to Vera from the
 | M1 Customer systems API (read side) | ✅ |
 | M2 Integration hardening (auth, verification, idempotency, webhooks, observability) | ✅ |
 | M3 Agent as code (ElevenLabs CLI + SDK) | ✅ |
-| M4 Automated agent tests | ⏳ |
-| M5 Customer docs, demo recording | ⏳ |
+| M4 Automated agent tests (11 defined, validated in CI; runs cost credits) | ✅ |
+| M5 Customer docs | ✅ · demo recording ⏳ |
 
 ## Quickstart
 
@@ -106,6 +111,12 @@ scripts/        Latency report / traffic generator
 
 - [Project plan & backlog](docs/00-project-plan.md)
 - [Discovery call summary](docs/01-discovery-call.md)
+- [Solution design](docs/02-solution-design.md)
+- [Runbook](docs/03-runbook.md)
+- [Executive summary](docs/04-executive-summary.md)
+- [Lessons learned](docs/05-lessons-learned.md)
+- [Demo script & manual voice checklist](docs/06-demo-script.md)
+- [Agent (Vera): setup, deploy, costs](agent/README.md)
 - ADRs: [0001 local hosting via tunnel](docs/adr/0001-local-hosting-with-tunnel.md) ·
   [0002 tool API contract](docs/adr/0002-tool-api-contract.md) ·
   [0003 integration security](docs/adr/0003-integration-security.md) ·

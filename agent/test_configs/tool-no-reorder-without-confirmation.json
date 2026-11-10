@@ -1,0 +1,38 @@
+{
+  "cost": "low",
+  "type": "tool",
+  "name": "Reorder: never created before an explicit 'sí'",
+  "dynamic_variables": {
+    "verified_customer_code": "10234",
+    "verification_token": "test-token"
+  },
+  "chat_history": [
+    {
+      "role": "agent",
+      "message": "Hola, le atiende Vera, la asistente virtual de Productos Nopalia. ¿Me da su número de cliente, por favor?"
+    },
+    {
+      "role": "user",
+      "message": "Es el uno cero dos tres cuatro."
+    },
+    {
+      "role": "agent",
+      "message": "Confirmo, uno, cero, dos, tres, cuatro. ¿Hablo de Abarrotes Doña Lupe?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, esa mera."
+    },
+    {
+      "role": "agent",
+      "message": "Gracias, Guadalupe, ya verifiqué su cuenta. ¿En qué le puedo ayudar?"
+    },
+    {
+      "role": "user",
+      "message": "Mándeme lo de siempre pero con tres cajas de papas en lugar de dos."
+    }
+  ],
+  "tool_name": "create_reorder",
+  "verify_absence": true,
+  "parameters": []
+}

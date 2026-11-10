@@ -58,3 +58,15 @@ def window_es(start: datetime, end: datetime, tz: str, today: date | None = None
 def first_name(full_name: str) -> str:
     """Only the first name is ever exposed to the agent (data minimization)."""
     return full_name.split()[0] if full_name.strip() else ""
+
+
+_DIGITS = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
+
+
+def digits_es(n: int) -> str:
+    """Digit by digit, no zero padding: 2 -> "dos", 4721 -> "cuatro, siete, dos, uno".
+
+    Callers write references down or repeat them to a colleague, so we read the shortest
+    unambiguous form. Padded system IDs (INC-000002) stay in the machine field.
+    """
+    return ", ".join(_DIGITS[int(c)] for c in str(n))

@@ -30,7 +30,8 @@
             "not_understood",
             "credit",
             "complaint",
-            "verification_failed"
+            "verification_failed",
+            "system_error"
           ]
         },
         "summary": {

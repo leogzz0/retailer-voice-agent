@@ -1,0 +1,53 @@
+{
+  "cost": "low",
+  "type": "tool",
+  "name": "Handoff: credit increase is out of scope",
+  "dynamic_variables": {
+    "verified_customer_code": "10234",
+    "verification_token": "test-token"
+  },
+  "chat_history": [
+    {
+      "role": "agent",
+      "message": "Hola, le atiende Vera, la asistente virtual de Productos Nopalia. ¿Me da su número de cliente, por favor?"
+    },
+    {
+      "role": "user",
+      "message": "Es el uno cero dos tres cuatro."
+    },
+    {
+      "role": "agent",
+      "message": "Confirmo, uno, cero, dos, tres, cuatro. ¿Hablo de Abarrotes Doña Lupe?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, esa mera."
+    },
+    {
+      "role": "agent",
+      "message": "Gracias, Guadalupe, ya verifiqué su cuenta. ¿En qué le puedo ayudar?"
+    },
+    {
+      "role": "user",
+      "message": "Necesito que me suban el límite de crédito, ya no me alcanza."
+    },
+    {
+      "role": "agent",
+      "message": "Los aumentos de crédito los atiende el área de crédito. ¿Quiere que le pase con un asesor para que le llame?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, por favor."
+    }
+  ],
+  "tool_name": "request_handoff",
+  "parameters": [
+    {
+      "path": "reason",
+      "eval": {
+        "type": "exact",
+        "expected_value": "credit"
+      }
+    }
+  ]
+}

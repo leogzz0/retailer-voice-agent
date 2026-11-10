@@ -153,6 +153,8 @@ class IncidentIn(BaseModel):
 
 class IncidentOut(BaseModel):
     ticket_number: str
+    # What the agent says out loud: "reporte número dos", not "INC, cero, cero, cero...".
+    ticket_number_es: str
     folio: int
     kind: IncidentKind
     message_es: str
@@ -167,4 +169,5 @@ class HandoffIn(BaseModel):
 
 class HandoffOut(BaseModel):
     reference: str
+    reference_es: str
     message_es: str

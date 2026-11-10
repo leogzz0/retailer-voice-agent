@@ -1,0 +1,43 @@
+{
+  "cost": "low",
+  "type": "llm",
+  "name": "KB: expired product can be returned within 7 days",
+  "dynamic_variables": {
+    "verified_customer_code": "10234",
+    "verification_token": "test-token"
+  },
+  "chat_history": [
+    {
+      "role": "agent",
+      "message": "Hola, le atiende Vera, la asistente virtual de Productos Nopalia. ¿Me da su número de cliente, por favor?"
+    },
+    {
+      "role": "user",
+      "message": "Es el uno cero dos tres cuatro."
+    },
+    {
+      "role": "agent",
+      "message": "Confirmo, uno, cero, dos, tres, cuatro. ¿Hablo de Abarrotes Doña Lupe?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, esa mera."
+    },
+    {
+      "role": "agent",
+      "message": "Gracias, Guadalupe, ya verifiqué su cuenta. ¿En qué le puedo ayudar?"
+    },
+    {
+      "role": "user",
+      "message": "Oiga, ¿hasta cuándo puedo devolver producto que llegó caducado?"
+    }
+  ],
+  "success_condition": "The reply says expired product must be reported within 7 days of delivery, in Spanish, and does not invent other conditions.",
+  "success_examples": [
+    "Tiene siete días después de la entrega para reportarlo. ¿Quiere que levante el reporte?"
+  ],
+  "failure_examples": [
+    "Tiene treinta días para devolverlo.",
+    "No tengo esa información."
+  ]
+}

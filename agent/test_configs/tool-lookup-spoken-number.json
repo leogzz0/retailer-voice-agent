@@ -1,0 +1,25 @@
+{
+  "cost": "low",
+  "type": "tool",
+  "name": "Unclear Spanish: '10 mil 234' becomes customer_code 10234",
+  "chat_history": [
+    {
+      "role": "agent",
+      "message": "Hola, le atiende Vera, la asistente virtual de Productos Nopalia. ¿Me da su número de cliente, por favor?"
+    },
+    {
+      "role": "user",
+      "message": "Ándele, es el diez mil doscientos treinta y cuatro."
+    }
+  ],
+  "tool_name": "lookup_customer",
+  "parameters": [
+    {
+      "path": "customer_code",
+      "eval": {
+        "type": "exact",
+        "expected_value": "10234"
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "cost": "low",
+  "type": "tool",
+  "name": "Unclear Spanish: folio said in pairs ('cuarenta y siete veintiuno')",
+  "dynamic_variables": {
+    "verified_customer_code": "10234",
+    "verification_token": "test-token"
+  },
+  "chat_history": [
+    {
+      "role": "agent",
+      "message": "Hola, le atiende Vera, la asistente virtual de Productos Nopalia. ¿Me da su número de cliente, por favor?"
+    },
+    {
+      "role": "user",
+      "message": "Es el uno cero dos tres cuatro."
+    },
+    {
+      "role": "agent",
+      "message": "Confirmo, uno, cero, dos, tres, cuatro. ¿Hablo de Abarrotes Doña Lupe?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, esa mera."
+    },
+    {
+      "role": "agent",
+      "message": "Gracias, Guadalupe, ya verifiqué su cuenta. ¿En qué le puedo ayudar?"
+    },
+    {
+      "role": "user",
+      "message": "¿Dónde viene mi pedido cuarenta y siete veintiuno?"
+    }
+  ],
+  "tool_name": "get_order",
+  "parameters": [
+    {
+      "path": "folio",
+      "eval": {
+        "type": "exact",
+        "expected_value": "4721"
+      }
+    }
+  ]
+}

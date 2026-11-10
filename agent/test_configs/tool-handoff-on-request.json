@@ -1,0 +1,52 @@
+{
+  "cost": "low",
+  "type": "tool",
+  "name": "Handoff: caller asks for a person",
+  "dynamic_variables": {
+    "verified_customer_code": "10234",
+    "verification_token": "test-token"
+  },
+  "chat_history": [
+    {
+      "role": "agent",
+      "message": "Hola, le atiende Vera, la asistente virtual de Productos Nopalia. ¿Me da su número de cliente, por favor?"
+    },
+    {
+      "role": "user",
+      "message": "Es el uno cero dos tres cuatro."
+    },
+    {
+      "role": "agent",
+      "message": "Confirmo, uno, cero, dos, tres, cuatro. ¿Hablo de Abarrotes Doña Lupe?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, esa mera."
+    },
+    {
+      "role": "agent",
+      "message": "Gracias, Guadalupe, ya verifiqué su cuenta. ¿En qué le puedo ayudar?"
+    },
+    {
+      "role": "user",
+      "message": "No, mejor comuníqueme con una persona, por favor."
+    }
+  ],
+  "tool_name": "request_handoff",
+  "parameters": [
+    {
+      "path": "reason",
+      "eval": {
+        "type": "exact",
+        "expected_value": "caller_request"
+      }
+    },
+    {
+      "path": "summary",
+      "eval": {
+        "type": "llm",
+        "description": "A short Spanish summary saying the caller asked to talk to a person."
+      }
+    }
+  ]
+}

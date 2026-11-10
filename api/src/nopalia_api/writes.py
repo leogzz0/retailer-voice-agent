@@ -139,6 +139,7 @@ def create_incident(
     incident.ticket_number = f"INC-{incident.id:06d}"
     return 201, schemas.IncidentOut(
         ticket_number=incident.ticket_number,
+        ticket_number_es=f"reporte número {speech.digits_es(incident.id)}",
         folio=order.folio,
         kind=payload.kind,
         message_es="Logística revisará el reporte en un máximo de 24 horas hábiles.",
@@ -182,4 +183,8 @@ def create_handoff(
     db.add(handoff)
     db.flush()
     handoff.reference = f"H-{handoff.id:06d}"
-    return 202, schemas.HandoffOut(reference=handoff.reference, message_es=HANDOFF_PROMISE_ES)
+    return 202, schemas.HandoffOut(
+        reference=handoff.reference,
+        reference_es=f"referencia número {speech.digits_es(handoff.id)}",
+        message_es=HANDOFF_PROMISE_ES,
+    )

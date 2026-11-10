@@ -11,9 +11,9 @@ runs locally only; ngrok tunnel for ElevenLabs → local API.
 | M0 | Discovery & project setup | Discovery summary and plan committed | ✅ |
 | M1 | Customer systems API (read side) | `make up` serves seeded data; `make check` green locally and in CI | ✅ |
 | M2 | Integration hardening | Tool auth, idempotent writes, signed post-call webhook, retries/timeouts, JSON logs, latency metrics, each with tests | ✅ |
-| M3 | Agent as code | `elevenlabs agents push` deploys "Vera"; text chat answers an order-status question using live local data | 🔄 in review |
-| M4 | Agent tests | ~10 CLI tests (happy path, unclear Spanish, mid-flow changes, handoff) passing | ⏳ |
-| M5 | Customer deliverables | Solution design, runbook, exec summary, ADRs, lessons learned, demo GIF | ⏳ |
+| M3 | Agent as code | `elevenlabs agents push` deploys "Vera"; text chat answers an order-status question using live local data | ✅ |
+| M4 | Agent tests | ~10 agent tests (happy path, unclear Spanish, mid-flow changes, handoff) defined and validated in CI; run on demand (credits) | ✅ |
+| M5 | Customer deliverables | Solution design, runbook, exec summary, ADRs, lessons learned, demo GIF | 🔄 demo recording pending |
 
 **What to cut first if behind:** the latency report script, then the demo GIF (screenshots
 instead), then reduce agent tests to 6.
@@ -54,15 +54,20 @@ Copy into GitHub Issues when convenient. Labels: `api`, `agent`, `docs`, `infra`
 - [x] `agent` Live simulation: order 4721 status answered from local data through the tunnel *(proves M2 review point 1)*
 - [x] `infra` ngrok static domain; `make tunnel`
 - [x] `docs` ADR-0005 agent config as code, ADR-0006 environments and secrets
-- [ ] `agent` Re-run the simulation to confirm `passthrough` error mode relays `message_es`
-- [ ] `agent` Shorter spoken references (`INC-000002` was read as six digits) *(from first live run)*
+- [ ] `agent` Confirm in a voice call that `passthrough` relays `message_es` (demo checklist V5)
+- [x] `agent` Shorter spoken references: `ticket_number_es` / `reference_es` *(from first live run)*
+- [x] `agent` Tool-failure fallback in the prompt + `system_error` handoff reason *(M3 review point 2)*
+- [x] `api` Contract test: tool configs vs OpenAPI routes and enums
 
 ### M4 — Agent tests
-- [ ] `agent` Tool-call tests: identification, order status, product search params
-- [ ] `agent` Next-reply tests: out-of-scope → handoff, KB answers
-- [ ] `agent` Simulation tests with mocked tools: unclear numbers/dates/names, mid-flow change of mind
-- [ ] `docs` Manual voice checklist for barge-in/interruptions (not testable in text)
+- [x] `agent` Tool-call tests: spoken customer code, folio in pairs, incident kind, handoff reasons, no reorder before "sí"
+- [x] `agent` Next-reply tests: KB answer, no data before verification, prompt injection, AI disclosure
+- [x] `agent` Simulation with mocked tools: mid-flow change of mind (marked high cost)
+- [x] `agent` `agent_tests.py` validate (CI, free) / push (free) / run (credits, explicit flag)
+- [x] `docs` Manual voice checklist for barge-in/interruptions (docs/06-demo-script.md)
+- [ ] `agent` First paid run of the low-cost tests, results recorded here
 
 ### M5 — Customer deliverables
-- [ ] `docs` Solution design, runbook, executive summary, lessons learned
-- [ ] `docs` README architecture diagram (Mermaid) + demo GIF
+- [x] `docs` Solution design, runbook, executive summary, lessons learned
+- [x] `docs` Demo script + manual voice checklist
+- [ ] `docs` Demo recording → GIF in README (manual voice call)

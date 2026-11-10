@@ -152,6 +152,8 @@ def test_report_incident(client: TestClient, verified: Verified, reseed: Engine)
     r = client.post("/v1/customers/10234/incidents", json=payload, headers=headers)
     assert r.status_code == 201
     assert r.json()["ticket_number"].startswith("INC-")
+    assert r.json()["ticket_number_es"].startswith("reporte número ")
+    assert "cero, cero" not in r.json()["ticket_number_es"]
     again = client.post("/v1/customers/10234/incidents", json=payload, headers=headers)
     assert again.json()["ticket_number"] == r.json()["ticket_number"]
     assert _count(reseed, Incident) == 1
@@ -249,5 +251,7 @@ def test_handoff_replay_creates_one_ticket(
     a = client.post("/v1/handoffs", json=HANDOFF, headers=headers)
     b = client.post("/v1/handoffs", json=HANDOFF, headers=headers)
     assert a.json()["reference"] == b.json()["reference"]
+    assert a.json()["reference_es"] == b.json()["reference_es"]
+    assert a.json()["reference_es"].startswith("referencia número ")
     assert _count(reseed, HandoffRequest) == 1
     assert len(ticketing.requests) == 1  # already SENT: background delivery is a no-op

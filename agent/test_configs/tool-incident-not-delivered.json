@@ -1,0 +1,60 @@
+{
+  "cost": "low",
+  "type": "tool",
+  "name": "Incident: missed delivery is reported with the right kind",
+  "dynamic_variables": {
+    "verified_customer_code": "10234",
+    "verification_token": "test-token"
+  },
+  "chat_history": [
+    {
+      "role": "agent",
+      "message": "Hola, le atiende Vera, la asistente virtual de Productos Nopalia. ¿Me da su número de cliente, por favor?"
+    },
+    {
+      "role": "user",
+      "message": "Es el uno cero dos tres cuatro."
+    },
+    {
+      "role": "agent",
+      "message": "Confirmo, uno, cero, dos, tres, cuatro. ¿Hablo de Abarrotes Doña Lupe?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, esa mera."
+    },
+    {
+      "role": "agent",
+      "message": "Gracias, Guadalupe, ya verifiqué su cuenta. ¿En qué le puedo ayudar?"
+    },
+    {
+      "role": "user",
+      "message": "Mi pedido cuatro siete uno cinco nunca llegó ayer, nadie vino."
+    },
+    {
+      "role": "agent",
+      "message": "Lo siento mucho. ¿Quiere que levante un reporte de pedido no entregado para el folio cuatro, siete, uno, cinco?"
+    },
+    {
+      "role": "user",
+      "message": "Sí, levántelo."
+    }
+  ],
+  "tool_name": "report_incident",
+  "parameters": [
+    {
+      "path": "folio",
+      "eval": {
+        "type": "exact",
+        "expected_value": "4715"
+      }
+    },
+    {
+      "path": "kind",
+      "eval": {
+        "type": "exact",
+        "expected_value": "not_delivered"
+      }
+    }
+  ]
+}

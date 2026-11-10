@@ -1,0 +1,15 @@
+{
+  "cost": "high",
+  "type": "simulation",
+  "name": "Simulation (mocked): caller changes quantities before confirming",
+  "simulation_scenario": "Eres el encargado de Abarrotes Doña Lupe, cliente 10234, últimos cuatro dígitos 1234. Pides 'lo de siempre'. Cuando te lean el pedido, cambias de opinión: quieres 5 cajas de refresco en lugar de 3 y quitas las papas. Solo cuando te lo lean corregido, dices 'sí, así'. Luego te despides.",
+  "success_condition": "The agent read the corrected order back, waited for the caller's explicit 'sí', called create_reorder exactly once with the corrected quantities and without the chips, then gave the folio and delivery date. The create_reorder items must be BEB-010 x5 and ABA-020 x1 only.",
+  "simulation_max_turns": 14,
+  "mock_all_tools": true,
+  "mocks": {
+    "lookup_customer": "{\"customer_code\": \"10234\", \"store_name\": \"Abarrotes Doña Lupe\", \"city\": \"Monterrey\"}",
+    "verify_caller": "{\"verified\": true, \"customer_code\": \"10234\", \"expires_in_s\": 1800, \"store_name\": \"Abarrotes Doña Lupe\", \"owner_first_name\": \"Guadalupe\", \"credit_available_mxn\": \"15136.00\"}",
+    "get_usual_order": "{\"customer_code\": \"10234\", \"based_on_orders\": 6, \"items\": [{\"sku\": \"BOT-001\", \"name\": \"Papas fritas Crujis sal de mar 45 g\", \"unit\": \"caja con 30 bolsas\", \"typical_quantity\": 2, \"times_ordered\": 6}, {\"sku\": \"BEB-010\", \"name\": \"Refresco Nopalia cola 600 ml\", \"unit\": \"caja con 24 botellas\", \"typical_quantity\": 3, \"times_ordered\": 6}, {\"sku\": \"ABA-020\", \"name\": \"Frijol bayo Nopalia 1 kg\", \"unit\": \"caja con 10 bolsas\", \"typical_quantity\": 1, \"times_ordered\": 5}]}",
+    "create_reorder": "{\"folio\": 10001, \"total_mxn\": \"2210.00\", \"promised_date\": \"2026-11-11\", \"promised_date_es\": \"mañana, miércoles 11 de noviembre\", \"after_cutoff\": false, \"cutoff_es\": \"18:00\", \"credit_available_mxn\": \"12926.00\"}"
+  }
+}

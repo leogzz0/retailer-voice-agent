@@ -2,7 +2,8 @@
 API := cd api &&
 
 .PHONY: help env up down reset logs seed test lint fmt typecheck check revision retry-handoffs latency tunnel \
-	agent-provision agent-render agent-deploy agent-pull
+	agent-provision agent-render agent-deploy agent-pull \
+	agent-tests-validate agent-tests-push agent-tests-run
 ELEVEN := cd agent && . $$HOME/.nvm/nvm.sh >/dev/null 2>&1; elevenlabs
 
 help: ## Show available targets
@@ -72,3 +73,12 @@ agent-deploy: agent-provision agent-render ## Provision, render and push the Ver
 agent-pull: ## Pull the live agent config (to see dashboard edits), then re-render
 	$(ELEVEN) agents pull --update --yes
 	$(MAKE) agent-render
+
+agent-tests-validate: ## Validate agent test definitions offline (free)
+	cd agent && uv run python agent_tests.py validate
+
+agent-tests-push: ## Create/update the agent tests in ElevenLabs (free, does not run them)
+	cd agent && uv run python agent_tests.py push
+
+agent-tests-run: ## Run the low-cost agent tests (USES CREDITS; add ARGS=--include-expensive)
+	cd agent && uv run python agent_tests.py run --yes-spend-credits $(ARGS)

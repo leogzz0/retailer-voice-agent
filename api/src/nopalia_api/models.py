@@ -209,6 +209,7 @@ class HandoffReason(enum.StrEnum):
     CREDIT = "credit"
     COMPLAINT = "complaint"
     VERIFICATION_FAILED = "verification_failed"
+    SYSTEM_ERROR = "system_error"
 
 
 class HandoffStatus(enum.StrEnum):
